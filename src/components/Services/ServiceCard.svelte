@@ -1,6 +1,7 @@
 <script>
     // @ts-nocheck
     export let service;
+    export let editabled = true;
     import TiEdit from 'svelte-icons/ti/TiEdit.svelte'
 </script>
 
@@ -11,9 +12,11 @@
         </div>
         <div class="service-content">
             {service?.name["en"]}
-            <div class="icon">
-                <TiEdit/>
-            </div>
+            {#if editabled}
+                <div class="icon">
+                    <TiEdit/>
+                </div>
+            {/if}            
         </div>
     {/if}
 </div>
