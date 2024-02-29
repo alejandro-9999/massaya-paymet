@@ -47,8 +47,15 @@
         gap:10px;
     }
 
-    .service-image > img{
+    .service-image{
         height: 50px;
+        width: 50px;
+    }
+
+    .service-image > img{
+        height: 100%;
+        width: 100%;
         border-radius: 5px;
+        object-fit: cover;
     }
 </style>
