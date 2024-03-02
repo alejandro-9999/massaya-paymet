@@ -1,7 +1,7 @@
 <script>
     import TipItem from "./TipItem.svelte";
 
-    let tips_options = [5, 10, 15, 20];
+    let tips_options = [0, 10, 15, 20];
 </script>
 
 <div class="tips-panel">

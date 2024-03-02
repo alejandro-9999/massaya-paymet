@@ -26,13 +26,13 @@
         padding: 20px 30px;
         min-height: 300px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        width: calc(40% - 40px);
+        width: calc(70% - 40px);
     }
 
 
     @media (max-width: 768px) {
         .card {
-            width: calc(70% - 40px);
+            width: calc(90% - 40px);
         }
     }
 

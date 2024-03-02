@@ -2,11 +2,17 @@
     // @ts-ignore
     export let percentage;
 </script>
+
 <div class="tip-item">
-    {percentage}%
+    {#if percentage == 0}
+        NO TIP
+    {:else}
+        {percentage}%
+    {/if}
 </div>
+
 <style>
-    .tip-item{
+    .tip-item {
         cursor: pointer;
         padding: 5px;
         border: 1px solid gray;
@@ -18,7 +24,6 @@
         justify-content: center;
         align-items: center;
         font-weight: bold;
-        
 
         &:hover {
             background-color: #1d191999;
@@ -37,5 +42,4 @@
             /* Reduzca ligeramente el tamaño al hacer clic */
         }
     }
-
 </style>

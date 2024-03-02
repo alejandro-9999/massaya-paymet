@@ -8,7 +8,9 @@
 
 <div class="card-header">
     <h2 class="section-title">Order Summary</h2>
-    <small class="section-subtitle">Section to be filled by staff</small>
+    {#if editabled}
+        <small class="section-subtitle">Section to be filled by staff</small>
+    {/if}
 </div>
 <hr class="divider" />
 <p>
