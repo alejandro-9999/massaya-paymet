@@ -1,0 +1,42 @@
+<div class="loading-spinner-container">
+    <div class="loading-spinner"></div>
+</div>
+
+<style>
+    .loading-spinner-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(29, 25, 25, 0.567);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        z-index: 1; /* Ensure it's above other elements */
+
+        /* Optionally, you can add transitions for a smoother appearance */
+        transition: opacity 0.3s ease;
+    }
+
+    .loading-spinner {
+        /* Adjust the size and styling of the spinner as needed */
+        width: 80px;
+        height: 80px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #000;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>

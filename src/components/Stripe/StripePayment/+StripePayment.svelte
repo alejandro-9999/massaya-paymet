@@ -10,7 +10,7 @@
     const PK_STRIPE = `${import.meta.env.VITE_STRIPE_TEST_PUBLIC_KEY}`;
     const SK_STRIPE = `${import.meta.env.VITE_STRIPE_TEST_SECRET_KEY}`;
 
-    // @ts-ignore
+    //@ts-ignore
     let stripe = null;
     let stripeService = null;
     let paymentIntent = null;
@@ -122,5 +122,5 @@
       font-size: 1.2rem;
       margin: 1rem 0;
     }
-  </style>
+</style>
   

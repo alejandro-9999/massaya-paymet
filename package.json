@@ -24,7 +24,9 @@
 	"type": "module",
 	"dependencies": {
 		"@stripe/stripe-js": "^3.0.6",
+		"qrcode": "^1.5.3",
+		"qrcode-generator": "^1.4.4",
 		"svelte-icons": "^2.1.0",
 		"svelte-routing": "^2.12.0"
 	}
-} 
+}
