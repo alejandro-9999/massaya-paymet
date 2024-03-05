@@ -1,4 +1,6 @@
 <script>
+    // @ts-nocheck
+
     import { loadStripe } from "@stripe/stripe-js";
     import { onMount } from "svelte";
     import Stripe from "stripe";
@@ -6,40 +8,63 @@
     import LinkAuthenticationElement from "$lib/LinkAuthenticationElement.svelte";
     import PaymentElement from "$lib/PaymentElement.svelte";
     import Address from "$lib/Address.svelte";
+    import LoadingSpinner from "../../LoadingSpinner.svelte";
 
     const PK_STRIPE = `${import.meta.env.VITE_STRIPE_TEST_PUBLIC_KEY}`;
-    const SK_STRIPE = `${import.meta.env.VITE_STRIPE_TEST_SECRET_KEY}`;
 
-    //@ts-ignore
+    export let booking;
+    export let setPaymentIntent;
+
+
     let stripe = null;
-    let stripeService = null;
     let paymentIntent = null;
-    // @ts-ignore
     let clientSecret = null;
-    // @ts-ignore
     let error = null;
-    // @ts-ignore
     let elements;
     let processing = false;
+    let loading = false;
+
+    let completed = false;
 
     onMount(async () => {
-        console.log(PK_STRIPE);
         stripe = await loadStripe(PK_STRIPE);
-        stripeService = new Stripe(SK_STRIPE);
-        paymentIntent = await stripeService.paymentIntents.create({
-            amount: 2000,
-            currency: "usd",
-            automatic_payment_methods: {
-                enabled: true,
-            },
-        });
+        if (booking.appointment) {
+            console.log(booking.appointment.booking_code);
+            let stripeIntent = await getStripeIntent(
+                booking.appointment.booking_code,
+            );
+            console.log(stripeIntent);
 
-        clientSecret = paymentIntent.client_secret;
-
-        console.log(paymentIntent);
+            if (stripeIntent != null) {
+                clientSecret = stripeIntent.client_secret;
+            }
+        }
     });
 
+    const getStripeIntent = async (booking_code) => {
+        loading = true;
+
+        const requestOptions = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
+
+        const res = await fetch(
+            `${import.meta.env.VITE_SVELTE_APP_API_URL}/retrieve-appointment/${booking_code}/payment-intent`,
+            requestOptions,
+        );
+        const data = await res.json();
+        if (res.status === 200) {
+            loading = false;
+            return data;            
+        }
+        return null; 
+    };
+
     async function submit() {
+        loading = true;
         // avoid processing duplicates
         if (processing) return;
 
@@ -48,79 +73,88 @@
         // confirm payment with stripe
         const result = await stripe.confirmPayment({
             elements,
-            redirect: "if_required",
+            redirect: 'if_required'
         });
 
-        // log results, for debugging
-        console.log({ result });
+       
 
         if (result.error) {
             // payment failed, notify user
             error = result.error;
+            console.log("Error");
             processing = false;
+            loading = false;
         } else {
             // payment succeeded, redirect to "thank you" page
-            goto("/examples/payment-element/thanks");
+            completed = true;
+            processing = false;
+            loading = false;
+           
         }
     }
-
 </script>
 
 <div>
-    {#if error}
-        <p class="error">{error.message} Please try again.</p>
-    {/if}
-    {#if clientSecret}
-        <Elements
-            {stripe}
-            {clientSecret}
-            theme="flat"
-            labels="floating"
-            variables={{ colorPrimary: "#7c4dff" }}
-            rules={{ ".Input": { border: "solid 1px #0002" } }}
-            bind:elements
-        >
-            <form on:submit|preventDefault={submit}>
-                <LinkAuthenticationElement />
-                <PaymentElement />
-                <Address mode="billing" />
+    {#if !completed}
+        {#if error}
+            <p class="error">{error.message} Please try again.</p>
+        {/if}
+        {#if clientSecret}
+            <Elements
+                {stripe}
+                {clientSecret}
+                theme="night"
+                labels="floating"
+                variables={{ colorPrimary: "#7c4dff" }}
+                rules={{ ".Input": { border: "solid 1px #0002" } }}
+                bind:elements
+            >
+                <form on:submit|preventDefault={submit}>
+                    <LinkAuthenticationElement />
+                    <PaymentElement />
+                    <Address mode="billing" />
 
-                <button disabled={processing}>
-                    {#if processing}
-                        Processing...
-                    {:else}
-                        Pay
-                    {/if}
-                </button>
-            </form>
-        </Elements>
+                    <button disabled={processing}>
+                        {#if processing}
+                            Processing...
+                        {:else}
+                            Pay
+                        {/if}
+                    </button>
+                </form>
+            </Elements>
+        {:else}
+            Loading...
+        {/if}
+
+        {#if !booking || !clientSecret || loading}
+            <LoadingSpinner />
+        {/if}
     {:else}
-        Loading...
+        <h1>Payment completed</h1>
     {/if}
 </div>
 
-
 <style>
     .error {
-      color: tomato;
-      margin: 2rem 0 0;
+        color: tomato;
+        margin: 2rem 0 0;
     }
-  
+
     form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 2rem 0;
     }
-  
+
     button {
-      padding: 1rem;
-      border-radius: 5px;
-      border: solid 1px #ccc;
-      color: white;
-      background: var(--link-color);
-      font-size: 1.2rem;
-      margin: 1rem 0;
+        padding: 1rem;
+        border-radius: 5px;
+        border: solid 1px #ccc;
+        color: white;
+        background: var(--link-color);
+        font-size: 1.2rem;
+        margin: 1rem 0;
     }
 </style>
-  

@@ -1,29 +1,36 @@
-<!-- QRCode.svelte -->
-<script>
-    import { onMount } from 'svelte';
-    import QRCode from 'qrcode-generator';
-  
-    // @ts-ignore
-    let canvas;
-  
+<script lang="ts">
+    // @ts-nocheck
+    import QRCode from "qrcode";
+    import { onMount } from "svelte";
+    import LoadingSpineer from "./LoadingSpinner.svelte";
+    export let code;
+
+    let qrCode = "";
+    let error = "";
+
     onMount(() => {
-      const qr = QRCode(0, 'L'); // Tipo 0 para QR Code y nivel de corrección 'L'
-      qr.addData('sample text');
-      qr.make();
-  
-      // @ts-ignore
-      const ctx = canvas.getContext('2d');
-      const cellSize = 2;
-      const margin = 10;
-  
-      for (let r = 0; r < qr.getModuleCount(); r++) {
-        for (let c = 0; c < qr.getModuleCount(); c++) {
-          ctx.fillStyle = qr.isDark(r, c) ? 'black' : 'white';
-          ctx.fillRect((c * cellSize) + margin, (r * cellSize) + margin, cellSize, cellSize);
-        }
-      }
+        generateQRCode(code);
     });
-  </script>
-  
-  <canvas bind:this={canvas}></canvas>
-  
+
+    async function generateQRCode(code) {
+        try {
+            qrCode = await QRCode.toString(code, { type: "svg" });
+        } catch (err) {
+            const qrCodeError = "Unknown error: Unable to render QR Code.";
+        }
+    }
+</script>
+
+{#if !error}
+    {#if qrCode}
+        <div class="w-64">
+            {@html qrCode}
+        </div>
+    {:else}
+        <div class="w-64 h-64">
+            <LoadingSpineer />
+        </div>
+    {/if}
+{:else}
+    <p>Unable to render QR Code.</p>
+{/if}

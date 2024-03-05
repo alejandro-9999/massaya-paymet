@@ -1,6 +1,5 @@
 <script>
     import Header from "../components/Header.svelte";
-    export const prerender = true;
 </script>
 
 <div class="background"></div>
